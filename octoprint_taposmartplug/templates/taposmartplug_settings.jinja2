@@ -7,7 +7,7 @@
 			<td style="text-align:center"><a href="#" class="btn btn-mini" data-bind="click: addPlug"><i class="fas fa-plus" aria-hidden="true"></i></a></td>
 		</tr>
 	</thead>
-	<tbody data-bind="sortable: { data: settings.settings.plugins.taposmartplug.arrSmartplugs, options: { cancel: '.unsortable', handle: '.movePlug', axis:'y'} }">
+	<tbody data-bind="sortable: { data: settings.settings.plugins.taposmartplug.smart_plugs_list, options: { cancel: '.unsortable', handle: '.movePlug', axis:'y'} }">
 		<tr data-bind="attr: {title: ip}, css: {error: ip().match(/^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/[0-9]+)?$/) == null}">
 			<td><span data-bind="text: label" /></td>
 			<td style="text-align:center">
@@ -94,7 +94,7 @@
 			<div class="control-group">
 				<div class="controls">
 					<label class="checkbox">
-					<input type="checkbox" title="{{ _('When enabled the status of plugs will be checked based on the Polling Interval supplied.') }}" data-toggle="tooltip" data-bind="checked: settings.settings.plugins.taposmartplug.pollingEnabled, tooltip: {}" /> {{ _('Enable polling of status.') }}
+					<input type="checkbox" title="{{ _('When enabled the status of plugs will be checked based on the Polling Interval supplied.') }}" data-toggle="tooltip" data-bind="checked: settings.settings.plugins.taposmartplug.polling_enabled, tooltip: {}" /> {{ _('Enable polling of status.') }}
 					</label>
 				</div>
 			</div>
@@ -104,7 +104,7 @@
 				<label class="control-label">{{ _('Polling Interval') }}</label>
 				<div class="controls">
 					<div class="input-append" data-toggle="tooltip" data-bind="tooltip: {}" title="{{ _('How long to wait between status checks of all plugs when polling is enabled.') }}">
-						<input type="number" min="0" class="input input-mini" data-bind="value: settings.settings.plugins.taposmartplug.pollingInterval, enable: settings.settings.plugins.taposmartplug.pollingEnabled" disabled />
+						<input type="number" min="0" class="input input-mini" data-bind="value: settings.settings.plugins.taposmartplug.polling_interval, enable: settings.settings.plugins.taposmartplug.polling_enabled" disabled />
 						<span class="add-on">{{ _('mins') }}</span>
 					</div>
 				</div>
@@ -133,7 +133,7 @@
 			<div class="control-group">
 				<div class="controls">
 					<label class="checkbox">
-					<input type="checkbox" title="{{ _('Automatically power off all plugs with the option Off on Idle enabled after configured idle timeout, target temperature is reached, and timelapse is completed.') }}" data-toggle="tooltip" data-bind="checked: settings.settings.plugins.taposmartplug.powerOffWhenIdle, tooltip: {}" /> {{ _('Power Off on Idle') }}
+					<input type="checkbox" title="{{ _('Automatically power off all plugs with the option Off on Idle enabled after configured idle timeout, target temperature is reached, and timelapse is completed.') }}" data-toggle="tooltip" data-bind="checked: settings.settings.plugins.taposmartplug.power_off_when_idle, tooltip: {}" /> {{ _('Power Off on Idle') }}
 					</label>
 				</div>
 			</div>
@@ -143,7 +143,7 @@
 				<label class="control-label">{{ _('Abort Power Off Timeout') }}</label>
 				<div class="controls">
 					<div class="input-append" data-toggle="tooltip" data-bind="tooltip: {}" title="{{ _('Pop up will be displayed for this amount of time to allow for cancelling power off of plugs.') }}">
-						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.abortTimeout, enable: settings.settings.plugins.taposmartplug.powerOffWhenIdle()" disabled />
+						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.abort_timeout, enable: settings.settings.plugins.taposmartplug.power_off_when_idle()" disabled />
 						<span class="add-on">{{ _('secs') }}</span>
 					</div>
 				</div>
@@ -154,7 +154,7 @@
 				<label class="control-label">{{ _('Idle Timeout') }}</label>
 				<div class="controls">
 					<div class="input-append" data-toggle="tooltip" data-bind="tooltip: {}" title="{{ _('Amount of time that will lapse before printer is considered idle and plugs will be powered off.') }}">
-						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.idleTimeout, enable: settings.settings.plugins.taposmartplug.powerOffWhenIdle() && settings.settings.plugins.taposmartplug.powerOffWhenIdle()" disabled />
+						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.idle_timeout, enable: settings.settings.plugins.taposmartplug.power_off_when_idle() && settings.settings.plugins.taposmartplug.power_off_when_idle()" disabled />
 						<span class="add-on">{{ _('mins') }}</span>
 					</div>
 				</div>
@@ -165,7 +165,7 @@
 				<label class="control-label">{{ _('Idle Target Temperature') }}</label>
 				<div class="controls">
 					<div class="input-append" data-toggle="tooltip" data-bind="tooltip: {}" title="{{ _('Power off will be delayed untill all heaters reach this temperature.') }}">
-						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.idleTimeoutWaitTemp, enable: settings.settings.plugins.taposmartplug.powerOffWhenIdle() && settings.settings.plugins.taposmartplug.powerOffWhenIdle()" disabled />
+						<input type="number" class="input-mini text-right" data-bind="value: settings.settings.plugins.taposmartplug.idle_timeoutWaitTemp, enable: settings.settings.plugins.taposmartplug.power_off_when_idle() && settings.settings.plugins.taposmartplug.power_off_when_idle()" disabled />
 						<span class="add-on">{{ _('degs') }}</span>
 					</div>
 				</div>
@@ -175,7 +175,7 @@
 			<div class="control-group">
 				<label class="control-label">{{ _('GCode Commands to Ignore for Idle') }}</label>
 				<div class="controls" data-toggle="tooltip" data-bind="tooltip: {}" title="{{ _('Comma separated list of gcode commands to ignore for determining printer idle state.') }}">
-					<input type="text" class="input-block-level" data-bind="value: settings.settings.plugins.taposmartplug.idleIgnoreCommands, enable: settings.settings.plugins.taposmartplug.powerOffWhenIdle() && settings.settings.plugins.taposmartplug.powerOffWhenIdle()" disabled />
+					<input type="text" class="input-block-level" data-bind="value: settings.settings.plugins.taposmartplug.idle_ignore_commands, enable: settings.settings.plugins.taposmartplug.power_off_when_idle() && settings.settings.plugins.taposmartplug.power_off_when_idle()" disabled />
 				</div>
 			</div>
 		</div>
@@ -214,7 +214,7 @@
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" title="{{ _('Automatically power off this plug when temperatures exceed configured maximum temperatures.') }}" data-toggle="tooltip" data-toggle="tooltip" data-bind="checked: thermal_runaway, enable: $root.settings.settings.plugins.taposmartplug.thermal_runaway_monitoring(), tooltip: {}"/> {{ _('Thermal Runaway') }}</label></div></td>
 			</tr>
 			<tr>
-				<td><div class="controls"><label class="checkbox"><input type="checkbox" title="{{ _('Automatically power off this plug when Power Off on Idle is enabled and configured timeouts and temperatures are reached.') }}" data-toggle="tooltip" data-bind="checked: automaticShutdownEnabled, enable: $root.settings.settings.plugins.taposmartplug.powerOffWhenIdle(), tooltip: {}" disabled /> {{ _('Off on Idle') }}</label></div></td>
+				<td><div class="controls"><label class="checkbox"><input type="checkbox" title="{{ _('Automatically power off this plug when Power Off on Idle is enabled and configured timeouts and temperatures are reached.') }}" data-toggle="tooltip" data-bind="checked: automaticShutdownEnabled, enable: $root.settings.settings.plugins.taposmartplug.power_off_when_idle(), tooltip: {}" disabled /> {{ _('Off on Idle') }}</label></div></td>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" title="{{ _('Automatically power off this plug when Error Event Monitoring is enabled.') }}" data-toggle="tooltip" data-bind="checked: event_on_error, enable: $root.settings.settings.plugins.taposmartplug.event_on_error_monitoring(), tooltip: {}" disabled /> {{ _('Off on Error') }}</label></div></td>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" title="{{ _('Automatically power on this plug when Upload Event Monitoring is enabled.') }}" data-toggle="tooltip" data-bind="checked: event_on_upload, enable: $root.settings.settings.plugins.taposmartplug.event_on_upload_monitoring(), tooltip: {}" disabled/> {{ _('On with Upload') }}</label></div></td>
 			</tr>

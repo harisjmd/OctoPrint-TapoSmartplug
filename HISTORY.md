@@ -1,0 +1,13 @@
+- **0.0.3**
+  - Renamed settings attributes and included them in settings.py
+  - Separated api and settings related functionality to different files
+  - Adapting of PyP100 package now in separate file with the adapter
+  - Added HISTORY.md
+  - Removed all requirements as they will be handled in setup.py
+  - Fixing button to stop auto power-off of plugs to be interactive
+  - Removed unused code
+- **0.0.2**
+  - Applying [PyP100](https://github.com/harisjmd/TapoP100) fork as requirement
+  - Fixing bugs on adoption of [PyP100](https://github.com/harisjmd/TapoP100)
+- **Initial Fork**
+  - Changing PyP100 version to 0.0.13 to fix installation issue

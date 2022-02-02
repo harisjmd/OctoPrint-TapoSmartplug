@@ -46,7 +46,7 @@ $(function() {
 			return output;
 		};
 
-		self.arrSmartplugs = ko.observableArray();
+		self.smart_plugs_list = ko.observableArray();
 		self.isPrinting = ko.observable(false);
 		self.selectedPlug = ko.observable();
 		self.processing = ko.observableArray([]);
@@ -55,7 +55,7 @@ $(function() {
 		self.plotted_graph_records_offset = ko.observable(0);
 		self.dictSmartplugs = ko.observableDictionary();
 		self.refreshVisible = ko.observable(true);
-		self.powerOffWhenIdle = ko.observable(false);
+		self.power_off_when_idle = ko.observable(false);
 		self.filteredSmartplugs = ko.computed(function(){
 			return ko.utils.arrayFilter(self.dictSmartplugs.items(), function(item) {
 						return "err_code" in item.value().emeter.get_realtime;
@@ -68,8 +68,8 @@ $(function() {
 
 		self.allPlugsDisabled =  ko.computed(function() {
 			var enablePlug = null;
-			enablePlug = ko.utils.arrayFirst(self.arrSmartplugs(), function(item) {
-				return item.currentState() == "on" && "err_code" in item.emeter.get_realtime;
+			enablePlug = ko.utils.arrayFirst(self.smart_plugs_list(), function(item) {
+				return item.currentState() === "on" && "err_code" in item.emeter.get_realtime;
 			});
 			if (enablePlug == null)
 				return false;
@@ -77,7 +77,7 @@ $(function() {
 		})
 
 		self.toggleShutdownTitle = ko.pureComputed(function() {
-			return self.settings.settings.plugins.taposmartplug.powerOffWhenIdle() ? 'Disable Automatic Power Off' : 'Enable Automatic Power Off';
+			return self.settings.settings.plugins.taposmartplug.power_off_when_idle() ? 'Disable Automatic Power Off' : 'Enable Automatic Power Off';
 		})
 
 		// Hack to remove automatically added Cancel button
@@ -111,7 +111,7 @@ $(function() {
 		};
 
 		self.onToggleAutomaticShutdown = function(data) {
-			if (self.settings.settings.plugins.taposmartplug.powerOffWhenIdle()) {
+			if (self.settings.settings.plugins.taposmartplug.power_off_when_idle()) {
 				$.ajax({
 					url: API_BASEURL + "plugin/taposmartplug",
 					type: "POST",
@@ -119,7 +119,8 @@ $(function() {
 					data: JSON.stringify({
 						command: "disableAutomaticShutdown"
 					}),
-					contentType: "application/json; charset=UTF-8"
+					contentType: "application/json; charset=UTF-8",
+                    onSuccess: self.settings.settings.plugins.taposmartplug.power_off_when_idle(false)
 				})
 			} else {
 				$.ajax({
@@ -129,7 +130,9 @@ $(function() {
 					data: JSON.stringify({
 						command: "enableAutomaticShutdown"
 					}),
-					contentType: "application/json; charset=UTF-8"
+					contentType: "application/json; charset=UTF-8",
+                    onSuccess: self.settings.settings.plugins.taposmartplug.power_off_when_idle(true)
+
 				})
 			}
 		}
@@ -203,7 +206,7 @@ $(function() {
 		}
 
 		self.onBeforeBinding = function() {
-			self.arrSmartplugs(self.settings.settings.plugins.taposmartplug.arrSmartplugs());
+			self.smart_plugs_list(self.settings.settings.plugins.taposmartplug.smart_plugs_list());
 		}
 
 		self.onAfterBinding = function() {
@@ -214,8 +217,8 @@ $(function() {
 		}
 
 		self.onSettingsBeforeSave = function(payload) {
-			var plugs_updated = (ko.toJSON(self.arrSmartplugs()) !== ko.toJSON(self.settings.settings.plugins.taposmartplug.arrSmartplugs()));
-			self.arrSmartplugs(self.settings.settings.plugins.taposmartplug.arrSmartplugs());
+			var plugs_updated = (ko.toJSON(self.smart_plugs_list()) !== ko.toJSON(self.settings.settings.plugins.taposmartplug.smart_plugs_list()));
+			self.smart_plugs_list(self.settings.settings.plugins.taposmartplug.smart_plugs_list());
 			if(plugs_updated){
 				self.checkStatuses();
 			}
@@ -277,16 +280,16 @@ $(function() {
 								'automaticShutdownEnabled':ko.observable(false),
 								'event_on_upload':ko.observable(false),
 								'event_on_startup':ko.observable(false)});
-			self.settings.settings.plugins.taposmartplug.arrSmartplugs.push(self.selectedPlug());
+			self.settings.settings.plugins.taposmartplug.smart_plugs_list.push(self.selectedPlug());
 			$("#TapoPlugEditor").modal("show");
 		}
 
 		self.removePlug = function(row) {
-			self.settings.settings.plugins.taposmartplug.arrSmartplugs.remove(row);
+			self.settings.settings.plugins.taposmartplug.smart_plugs_list.remove(row);
 		}
 
 		self.onDataUpdaterPluginMessage = function(plugin, data) {
-			if (plugin != "taposmartplug") {
+			if (plugin !== "taposmartplug") {
 				return;
 			}
 
@@ -302,10 +305,10 @@ $(function() {
 				self.plotEnergyData();
 			}
 
-			if(data.hasOwnProperty("powerOffWhenIdle")) {
-				self.settings.settings.plugins.taposmartplug.powerOffWhenIdle(data.powerOffWhenIdle);
+			if(data.hasOwnProperty("power_off_when_idle")) {
+				self.settings.settings.plugins.taposmartplug.power_off_when_idle(data.power_off_when_idle);
 
-				if (data.type == "timeout") {
+				if (data.type === "timeout") {
 					if ((data.timeout_value != null) && (data.timeout_value > 0)) {
 						self.timeoutPopupOptions.text = self.timeoutPopupText + data.timeout_value;
 						if (typeof self.timeoutPopup != "undefined") {
@@ -366,7 +369,7 @@ $(function() {
 				$("#TapoSmartPlugWarning").modal("hide");
 				self.sendTurnOff(data);
 			}
-		}; 
+		};
 
 		self.sendTurnOff = function(data) {
 			$.ajax({
@@ -400,7 +403,7 @@ $(function() {
 				contentType: "application/json; charset=UTF-8"
 				}).done(function(data){
 						var trace_current = {x:[],y:[],mode:'lines+markers',name:'Current (Amp)',xaxis: 'x2',yaxis: 'y2'};
-						var trace_power = {x:[],y:[],mode:'lines+markers',name:'Power (W)',xaxis: 'x3',yaxis: 'y3'}; 
+						var trace_power = {x:[],y:[],mode:'lines+markers',name:'Power (W)',xaxis: 'x3',yaxis: 'y3'};
 						var trace_total = {x:[],y:[],mode:'lines+markers',name:'Total (kWh)'};
 						var trace_cost = {x:[],y:[],mode:'lines+markers',name:'Cost'}
 
@@ -503,15 +506,15 @@ $(function() {
 		}
 
 		self.updateDictionary = function(data){
-			ko.utils.arrayForEach(self.arrSmartplugs(),function(item){
-					if(item.ip() == data.ip) {
+			ko.utils.arrayForEach(self.smart_plugs_list(),function(item){
+					if(item.ip() === data.ip) {
 						item.currentState(data.currentState);
 						if(data.emeter){
 							item.emeter.get_realtime = {};
 							for (key in data.emeter.get_realtime){
 								item.emeter.get_realtime[key] = ko.observable(data.emeter.get_realtime[key]);
 							}
-							if(data.ip == self.plotted_graph_ip() && window.location.href.indexOf('taposmartplug') > 0){
+							if(data.ip === self.plotted_graph_ip() && window.location.href.indexOf('taposmartplug') > 0){
 								self.plotEnergyData();
 							}
 						}
@@ -519,7 +522,7 @@ $(function() {
 					}
 				});
 				//self.dictSmartplugs.removeAll();
-				self.dictSmartplugs.pushAll(ko.toJS(self.arrSmartplugs),'ip');
+				self.dictSmartplugs.pushAll(ko.toJS(self.smart_plugs_list),'ip');
 			}
 
 		self.checkStatus = function(plugIP) {
@@ -530,10 +533,10 @@ $(function() {
 				data: {checkStatus:plugIP},
 				contentType: "application/json; charset=UTF-8"
 			}).done(self.updateDictionary);
-		}; 
+		};
 
 		self.checkStatuses = function() {
-			ko.utils.arrayForEach(self.arrSmartplugs(),function(item){
+			ko.utils.arrayForEach(self.smart_plugs_list(),function(item){
 				if(item.ip() !== "") {
 					self.processing.push(item.ip());
 					self.checkStatus(item.ip());

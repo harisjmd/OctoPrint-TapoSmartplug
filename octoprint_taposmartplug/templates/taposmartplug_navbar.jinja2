@@ -1,4 +1,4 @@
-<!-- ko foreach: arrSmartplugs -->
+<!-- ko foreach: smart_plugs_list -->
 <a class="pull-right" href="#" data-toggle="tooltip" data-html="true" data-bind="click: $root.toggleRelay, visible: $root.loginState.loggedIn(), tooltip: {title: label, placement: 'bottom'}" style="float: left;"><i class="icon" data-bind="css: [currentState(), icon(),(($root.processing().indexOf(ip()) > -1) ? 'icon-spin' : '')].join(' ')"></i><span data-bind="text: label"></span></a>
 <!-- /ko -->
 
@@ -9,7 +9,7 @@
     </div>
     <div class="modal-body">
         <p>
-            <!--ko text: label()--><!--/ko--> is currently <!--ko text: currentState()--><!--/ko-->. 
+            <!--ko text: label()--><!--/ko--> is currently <!--ko text: currentState()--><!--/ko-->.
         </p>
 		<p>
             {{ _('Are you sure you want to proceed?') }}

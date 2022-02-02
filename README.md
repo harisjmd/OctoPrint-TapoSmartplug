@@ -1,16 +1,9 @@
 # OctoPrint-TapoSmartplug
 
-This is a fork of https://github.com/jneilliii/OctoPrint-TPLinkSmartplug with integration for the Tapo P100 smart plug using the [PyP100 library](https://github.com/fishbigger/TapoP100)
 
-I have renamed all the TP-Link references to Tapo and removed the bits to do with timed events as these don't appear to work with the P100 in LAN mode which was the aim. Also as the plug I have doesn't have any power information I have removed that as well.
+This is a fork of https://github.com/Tyfy/OctoPrint-TapoSmartplug to fix the relevant issues during installation of the plugin in Octoprint.
 
-I am not a Python developer and this is the first time I have dealt with an OctoPrint plugin so if anyone wants to fork this and take it forward then go for it or alternatively it could be added to the TP-Link plugin with an option for Plug type.
 
-I did have to upgrade my Octoprint to Python3 due to what I believe is a dependency of the PyP100 library.
-
-At the moment the button/icon works and will turn the plug on and off, turn on at startup and the idle timeout also appears to be working but I am having no luck with the upload notification, the refresh of state in octoprint if I manually turn the plug on/off doesn't appear to work and possibly a host of other notifications.
-
-Not bad for a few hours seeing if it would work.
 
 ##  Screenshots
 
@@ -18,7 +11,7 @@ Not bad for a few hours seeing if it would work.
 
 Install manually using this URL:
 
-    https://github.com/Tyfy/OctoPrint-TapoSmartplug/archive/master.zip
+    https://github.com/harisjmd/OctoPrint-TapoSmartplug/archive/refs/heads/master.zip
 
 
 ## Configuration
@@ -55,7 +48,7 @@ Once installed go into settings and enter the ip address, username and password 
   - When checked will run system command configured in **System Command On** setting after a delay in seconds configured in **System Command On Delay**.
 - **Run System Command Before Off**
   - When checked will run system command configured in **System Command Off** setting after a delay in seconds configured in **System Command Off Delay**.
-  
+
 ## Get Help
 
 If you experience issues with this plugin or need assistance please use the issue tracker by clicking issues above.
