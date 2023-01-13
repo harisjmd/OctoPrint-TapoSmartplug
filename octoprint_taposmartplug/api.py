@@ -1,6 +1,6 @@
 import logging
 
-from .tapo import TapoP100Adapter
+from .tapo import TapoPlugAdapter
 
 
 class Commands:
@@ -36,13 +36,13 @@ class TapoSmartPlugApi:
 		self.plugin = plugin
 		self._logger = logging.getLogger("octoprint.plugins.taposmartplug.TapoSmartPlugApi")
 
-	def on_api_get(self, tapo: TapoP100Adapter, request):
+	def on_api_get(self, tapo: TapoPlugAdapter, request):
 		self._logger.debug(request.args)
 		if request.args.get(Commands.checkStatus):
 			response = tapo.get_status()
 			return response
 
-	def on_api_command(self, tapo: TapoP100Adapter, command, data):
+	def on_api_command(self, tapo: TapoPlugAdapter, command, data):
 		if command == Commands.turnOn:
 			return tapo.send_turn_on()
 		elif command == Commands.turnOff:

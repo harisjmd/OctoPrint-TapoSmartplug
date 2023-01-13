@@ -2,7 +2,7 @@
 plugin_identifier = "taposmartplug"
 plugin_package = "octoprint_taposmartplug"
 plugin_name = "OctoPrint-TapoSmartplug"
-plugin_version = "0.0.3"
+plugin_version = "0.0.4"
 plugin_description = """Simple plugin to control Tapo Smartplug"""
 plugin_author = "harisjmd"
 plugin_author_email = "harisjmd@gmail.com"
@@ -10,7 +10,7 @@ plugin_url = "https://github.com/harisjmd/OctoPrint-TapoSmartplug"
 plugin_license = "AGPLv3"
 plugin_requires = [
 	"uptime",
-	"PyP100 @ https://github.com/harisjmd/TapoP100/archive/refs/heads/main.zip"
+	"PyP100>=0.1.2"
 ]
 
 # Additional package data to install for this plugin. The subfolders "templates", "static" and "translations" will

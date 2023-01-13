@@ -253,6 +253,7 @@ $(function() {
 								'icon':ko.observable('icon-bolt'),
 								'username':ko.observable(''),
 								'password':ko.observable(''),
+                                'type' :ko.observable(''),
 								'displayWarning':ko.observable(true),
 								'warnPrinting':ko.observable(false),
 								'gcodeEnabled':ko.observable(false),

@@ -19,7 +19,7 @@ from uptime import uptime
 
 from .api import TapoSmartPlugApi, Commands
 from .settings import PlugSettings, TapoSettings
-from .tapo import TapoP100Adapter
+from .tapo import TapoPlugAdapter
 from .utils import encode_string, decode_string
 
 ON_STATE = "on"
@@ -69,7 +69,6 @@ class taposmartplugPlugin(
 		self.db_path = None
 
 	# StartupPlugin mixin
-
 	def on_startup(self, host, port):
 		# setup customized logger
 		from octoprint.logging.handlers import CleaningTimedRotatingFileHandler
@@ -204,6 +203,8 @@ class taposmartplugPlugin(
 				)
 				self.poll_status.start()
 
+		self.check_statuses()
+
 	def get_settings_version(self):
 		return TapoSettings.get_version()
 
@@ -268,8 +269,8 @@ class taposmartplugPlugin(
 
 	def turn_on(self, plug_ip):
 		plug = self.plug_search(self._settings.get([TapoSettings.SMART_PLUGS_LIST]), PlugSettings.ip, plug_ip)
-		p100_adapter = TapoP100Adapter.create_tapo_p100_adapter(plug)
-		status = p100_adapter.send_turn_on()
+		tapo_plug_adapter = TapoPlugAdapter.create_tapo_plug_adapter(plug)
+		status = tapo_plug_adapter.send_turn_on()
 
 		if plug[PlugSettings.autoConnect] and self._printer.is_closed_or_error():
 			c = threading.Timer(int(plug[PlugSettings.autoConnectDelay]), self._printer.connect)
@@ -288,7 +289,7 @@ class taposmartplugPlugin(
 
 	def turn_off(self, plug_ip):
 		plug = self.plug_search(self._settings.get([TapoSettings.SMART_PLUGS_LIST]), PlugSettings.ip, plug_ip)
-		p100_adapter = TapoP100Adapter.create_tapo_p100_adapter(plug)
+		tapo_plug_adapter = TapoPlugAdapter.create_tapo_plug_adapter(plug)
 
 		if plug[PlugSettings.sysCmdOff]:
 			t = threading.Timer(
@@ -301,14 +302,14 @@ class taposmartplugPlugin(
 			self._printer.disconnect()
 			time.sleep(int(plug[PlugSettings.autoDisconnectDelay]))
 
-		status = p100_adapter.send_turn_off()
+		status = tapo_plug_adapter.send_turn_off()
 		self._stop_idle_timer()
 		return status
 
 	def check_statuses(self):
 		for plug in self._settings.get([TapoSettings.SMART_PLUGS_LIST]):
-			p100_adapter = TapoP100Adapter.create_tapo_p100_adapter(plug)
-			status = p100_adapter.get_status()
+			tapo_plug_adapter = TapoPlugAdapter.create_tapo_plug_adapter(plug)
+			status = tapo_plug_adapter.get_status()
 			self._plugin_manager.send_plugin_message(self._identifier, status)
 
 	def get_api_commands(self):
@@ -317,8 +318,8 @@ class taposmartplugPlugin(
 	def on_api_get(self, request):
 		ip = request.args.get(Commands.checkStatus)
 		plug = self.plug_search(self._settings.get([TapoSettings.SMART_PLUGS_LIST]), PlugSettings.ip, ip)
-		p100_adapter = TapoP100Adapter.create_tapo_p100_adapter(plug)
-		r = self._api.on_api_get(p100_adapter, request)
+		tapo_plug_adapter = TapoPlugAdapter.create_tapo_plug_adapter(plug)
+		r = self._api.on_api_get(tapo_plug_adapter, request)
 		if r is not None:
 			return flask.jsonify(r)
 
@@ -326,19 +327,19 @@ class taposmartplugPlugin(
 		if not Permissions.PLUGIN_TAPOSMARTPLUG_CONTROL.can():
 			return flask.make_response("Insufficient rights", 403)
 
-		p100_adapter = None
+		tapo_plug_adapter = None
 		if PlugSettings.ip in data:
 			ip = "{ip}".format(**data)
 			plug = self.plug_search(self._settings.get([TapoSettings.SMART_PLUGS_LIST]), PlugSettings.ip, ip)
-			p100_adapter = TapoP100Adapter.create_tapo_p100_adapter(plug)
+			tapo_plug_adapter = TapoPlugAdapter.create_tapo_plug_adapter(plug)
 
-		r = self._api.on_api_command(p100_adapter, command, data)
+		r = self._api.on_api_command(tapo_plug_adapter, command, data)
 		if r is not None:
 			if command not in Commands.get_auto_shutdown_cmds():
 				self._plugin_manager.send_plugin_message(self._identifier, r)
 			return flask.jsonify(r)
 
-	def handle_auto_shutdown_cmd(self, tapo: TapoP100Adapter, command, data):
+	def handle_auto_shutdown_cmd(self, tapo: TapoPlugAdapter, command, data):
 		if command == Commands.enableAutomaticShutdown:
 			self.powerOffWhenIdle = True
 			self._reset_idle_timer()

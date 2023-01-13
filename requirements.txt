@@ -7,3 +7,9 @@
 ###
 
 .
+
+#setuptools~=58.3.0
+#OctoPrint~=1.7.2
+#PyP100~=0.1.2
+#Flask~=1.1.4
+#uptime~=3.0.1

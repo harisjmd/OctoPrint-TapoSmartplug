@@ -140,6 +140,13 @@ class TapoSettings:
 			settings.set([TapoSettings.IDLE_IGNORE_COMMANDS], settings.get([TapoSettings.idleIgnoreCommands]))
 			settings.set([TapoSettings.IDLE_TIMEOUT_WAIT_TEMP], settings.get([TapoSettings.idleTimeoutWaitTemp]))
 
+		if current is not None and current < 15:
+			arrSmartplugs_new = []
+			for plug in settings.get([TapoSettings.arrSmartplugs]):
+				plug[PlugSettings.type] = PlugType.P100
+				arrSmartplugs_new.append(plug)
+
+
 
 class ResettableTimer(threading.Thread):
 	def __init__(self, interval, function, args=None, kwargs=None, on_reset=None, on_cancelled=None):
@@ -192,6 +199,7 @@ class ResettableTimer(threading.Thread):
 
 
 class PlugSettings:
+	type = "type"
 	autoConnect = "autoConnect"
 	autoConnectDelay = "autoConnectDelay"
 	autoDisconnect = "autoDisconnect"
@@ -225,3 +233,7 @@ class PlugSettings:
 	useCountdownRules = "useCountdownRules"
 	username = "username"
 	warnPrinting = "warnPrinting"
+
+class PlugType:
+	P110 = "P110"
+	P100 = "P1o0"

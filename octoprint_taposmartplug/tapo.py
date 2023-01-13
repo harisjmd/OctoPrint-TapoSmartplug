@@ -1,28 +1,34 @@
 import logging
 
-from PyP100 import PyP100
+from PyP100 import PyP100, PyP110
+from octoprint_taposmartplug.utils import decode_string
+from .settings import PlugSettings, PlugType
 
-from .utils import decode_string
-from .settings import PlugSettings
-
-
-class TapoP100Adapter:
-	def __init__(self, ip, username, password):
+class TapoPlugAdapter:
+	def __init__(self, ip, username, password , plug_type=PlugType.P100):
 		self._ip = ip
-		# Creating a P100 plug object
-		self._p100 = PyP100.P100(ip, username, password)
-		self._p100.handshake()  # Creates the cookies required for further methods
-		self._p100.login()  # Sends credentials to the plug and creates AES Key and IV for further methods
-		self._logger = logging.getLogger("octoprint.plugins.taposmartplug.TapoAdapter")
+		self._type = plug_type
+		self._tapo_plug = PyP100.P100(ip, username, password)
+
+		if plug_type == PlugType.P110:
+			self._tapo_plug = PyP110.P110(ip, username, password)
+
+		self._tapo_plug.handshake()  # Creates the cookies required for further methods
+		self._tapo_plug.login()  # Sends credentials to the plug and creates AES Key and IV for further methods
+		self._logger = logging.getLogger("octoprint.plugins.taposmartplug.TapoPlugAdapter")
 
 	def send_turn_on(self):
 		self._logger.info("%s - Turning on." % self._ip)
-		self._p100.turnOn()  # Sends the turn on request
+		self._tapo_plug.turnOn()  # Sends the turn on request
 		return self.get_status()
 
 	@property
 	def ip(self):
 		return self._ip
+
+	@property
+	def type(self):
+		return self._type
 
 	@staticmethod
 	def plug_search(lst, key, value):
@@ -32,7 +38,7 @@ class TapoP100Adapter:
 
 	def get_status(self):
 		self._logger.debug("%s - Checking status" % self._ip)
-		response = self._p100.getDeviceInfo()
+		response = self._tapo_plug.getDeviceInfo()
 		status = self.lookup(response, *["result", "device_on"])
 		self._logger.debug("%s - Status: %d".format(self._ip, status))
 
@@ -51,13 +57,20 @@ class TapoP100Adapter:
 
 	def send_turn_off(self):
 		self._logger.info("%s - Turning off." % self._ip)
-		self._p100.turnOff()
+		self._tapo_plug.turnOff()
 		return self.get_status()
 
+	def get_energy(self):
+		if self._type == PlugType.P110:
+			return self._tapo_plug.getEnergyUsage()
+		else:
+			return {}
+
 	@staticmethod
-	def create_tapo_p100_adapter(p: dict):
-		return TapoP100Adapter(
+	def create_tapo_plug_adapter(p: dict):
+		return TapoPlugAdapter(
 				p[PlugSettings.ip],
 				p[PlugSettings.username],
-				decode_string(p[PlugSettings.password])
+				decode_string(p[PlugSettings.password]),
+				p[PlugSettings.type]
 		)
